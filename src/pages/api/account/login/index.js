@@ -2,6 +2,10 @@ import bcrypt from "bcryptjs"; // Library for password hashing
 import jwt from "jsonwebtoken"; // Library for generating JWT tokens
 import db from "@/lib/db"; // Importing database connection
 
+/** 
+ * @returns {Promise<void>} Sends a JSON response with a token or an error message.
+*/
+
 export default async function handler(req, res) {
     //  Allow only POST requests
     if (req.method !== "POST") {
