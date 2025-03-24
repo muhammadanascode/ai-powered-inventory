@@ -2,7 +2,7 @@ import db from '@/lib/db';
 import bcrypt from 'bcryptjs';
 
 /**
- * @route PATCH /api/account/update
+ * @route PATCH /api/account/[account_id]/update
  * @desc Update user details (name or password)
  * @access Public (Can be restricted later)
  * 

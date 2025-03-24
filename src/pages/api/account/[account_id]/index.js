@@ -1,7 +1,7 @@
 import db from '@/lib/db';
 
 /**
- * @route GET /api/account/:id
+ * @route GET /api/account/:[account_id]
  * @desc Fetch user details by account ID
  * @access Public (Requires account_id in params)
  *
