@@ -1,5 +1,6 @@
 import db from '@/lib/db';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 /**
  * @route PATCH /api/account/[account_id]/update
@@ -21,21 +22,42 @@ export default async function handler(req, res) {
     const { name, newPassword, oldPassword } = req.body;
     const { account_id } = req.query;
 
-    //checking account_id is not null
+    // Checking if account_id is provided
     if (!account_id) {
         return res.status(400).json({ error: "User ID is required" });
     }
 
-    //checking there is atleast one field either name or password
-    if (!name && !newPassword) {
-        return res.status(400).json({ error: "Provide at least one field to update (name or password)" });
+    // Checking if token is provided in the request headers
+    const token = req.headers.authorization;
+    if (!token) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    try {
+        // Verify JWT token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const loggedInAccountId = decoded.account_id;
+
+        // Check if the logged-in user is updating their own account
+        if (loggedInAccountId !== Number(account_id)) {
+            return res.status(403).json({ error: "Forbidden: You can only update your own account" });
+        }
+
+        // Ensure at least one field is provided for update
+        if (!name && !newPassword) {
+            return res.status(400).json({ error: "Provide at least one field to update (name or password)" });
+        }
+    }
+    catch (error) {
+        return res.status(401).json({ error: "Invalid or expired token" });
     }
 
     let connection;
     try {
+        // Get database connection
         connection = await db.getConnection();
 
-        // Validate name (if provided)
+        // Validate name if provided
         if (name) {
             const nameRegex = /^[A-Za-z][A-Za-z0-9 ]{7,}$/; // Starts with a letter, min 8 chars
             if (!nameRegex.test(name)) {
@@ -45,6 +67,7 @@ export default async function handler(req, res) {
 
         let hashedPassword = null;
         if (newPassword) {
+            // Ensure old password is provided for verification
             if (!oldPassword) {
                 return res.status(400).json({ error: "Old password is required to update the password" });
             }
@@ -61,17 +84,18 @@ export default async function handler(req, res) {
 
             const account = resultAccount[0];
 
-            // Compare old password
+            // Compare old password with the stored hash
             const isMatch = await bcrypt.compare(oldPassword, account.password);
             if (!isMatch) {
                 return res.status(400).json({ error: "Old password is incorrect" });
             }
 
-            // Validate new password
+            // Validate new password length
             if (newPassword.length < 8) {
                 return res.status(400).json({ error: "New password must be at least 8 characters" });
             }
 
+            // Hash the new password
             hashedPassword = await bcrypt.hash(newPassword, 10);
         }
 
@@ -79,12 +103,12 @@ export default async function handler(req, res) {
         let updateQuery = "UPDATE Account SET ";
         const updateValues = [];
 
-        //if the update is for name
+        // If name is being updated
         if (name) {
             updateQuery += "name = ?, ";
             updateValues.push(name);
         }
-        // if the update is for password
+        // If password is being updated
         if (hashedPassword) {
             updateQuery += "password = ?, ";
             updateValues.push(hashedPassword);
@@ -97,6 +121,7 @@ export default async function handler(req, res) {
         // Execute update query
         const [result] = await connection.execute(updateQuery, updateValues);
 
+        // If no rows were affected, return a message
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: "No changes made" });
         }
@@ -107,8 +132,8 @@ export default async function handler(req, res) {
         console.error(error);
         return res.status(500).json({ error: "Database error" });
     }
-    // close the connection
+    // Close the database connection in the finally block
     finally {
-        if (connection) connection.release(); // Ensure connection is closed
+        if (connection) connection.release();
     }
 }
