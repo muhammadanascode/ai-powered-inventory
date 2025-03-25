@@ -1,6 +1,7 @@
 import db from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import authenticate from '@/middlewares/auth';
 
 /**
  * @route PATCH /api/account/[account_id]/update
@@ -19,6 +20,9 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: "Method Not Allowed" });
     }
 
+    //added middleware function check if the user is logged in then proceede
+    authenticate(req, res , async () => {
+
     const { name, newPassword, oldPassword } = req.body;
     const { account_id } = req.query;
 
@@ -27,19 +31,10 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "User ID is required" });
     }
 
-    // Checking if token is provided in the request headers
-    const token = req.headers.authorization;
-    if (!token) {
-        return res.status(401).json({ error: "Unauthorized" });
-    }
-
     try {
-        // Verify JWT token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const loggedInAccountId = decoded.account_id;
 
         // Check if the logged-in user is updating their own account
-        if (loggedInAccountId !== Number(account_id)) {
+        if (req.user.account_id !== Number(account_id)) {
             return res.status(403).json({ error: "Forbidden: You can only update your own account" });
         }
 
@@ -136,4 +131,7 @@ export default async function handler(req, res) {
     finally {
         if (connection) connection.release();
     }
+
+});
+
 }
