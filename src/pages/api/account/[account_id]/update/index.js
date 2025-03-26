@@ -95,26 +95,26 @@ export default async function handler(req, res) {
         }
 
         // Prepare the update query dynamically
-        let updateQuery = "UPDATE Account SET ";
-        const updateValues = [];
+        const updates = [] ;
+        const params = [];
 
         // If name is being updated
         if (name) {
-            updateQuery += "name = ?, ";
-            updateValues.push(name);
+            updates.push("name = ?");
+            params.push(name);
         }
         // If password is being updated
         if (hashedPassword) {
-            updateQuery += "password = ?, ";
-            updateValues.push(hashedPassword);
+            updates.push("password = ?");
+            params.push(hashedPassword);
         }
 
         // Remove the trailing comma and add the WHERE clause
-        updateQuery = updateQuery.slice(0, -2) + " WHERE account_id = ?";
-        updateValues.push(account_id);
+        const query = `UPDATE ACCOUNT SET ${updates.join(', ')} WHERE account_id = ?`;
+        params.push(account_id);
 
         // Execute update query
-        const [result] = await connection.execute(updateQuery, updateValues);
+        const [result] = await connection.execute(query, params);
 
         // If no rows were affected, return a message
         if (result.affectedRows === 0) {
