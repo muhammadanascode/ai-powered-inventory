@@ -13,11 +13,11 @@ export default async function handler(req, res) {
     }
 
     authenticate(req, res, async () => {
-        const { account_id, supplier_id } = req.query;
+        let { account_id, sub_account_id, supplier_id } = req.query;
 
         // Validate account_id
-        if (!account_id || isNaN(account_id)) {
-            return res.status(400).json({ error: "Valid account_id is required" });
+        if (!account_id && !sub_account_id) {
+            return res.status(400).json({ error: "Account id or sub account id is required" });
         }
 
         // Validate supplier_id
@@ -28,10 +28,24 @@ export default async function handler(req, res) {
         let connection;
         try {
 
-            // Check if the user is authorized to delete the supplier
-            if (req.user.account_id !== Number(account_id)) {
-                return res.status(403).json({ error: "Forbidden: You can only delete suppliers from your own account" });
+            // authorizing user
+            if (account_id) {
+                if (req.user.account_id !== Number(account_id)) {
+                    return res.status(403).json({ error: "Forbidden: You can only view suppliers from your own account" });
+                }
+            } else {
+                if (req.user.sub_account_id !== Number(sub_account_id)) {
+                    return res.status(403).json({ error: "Forbidden: You can only view suppliers from your own sub-account" });
+                }
+                else if (req.user.account_type !== "manager") {
+                    return res.status(403).json({ error: "Only owner and manager can add new suppliers" })
+                }
             }
+
+            //assigning of in case it is null
+
+            account_id = req.user.account_id;
+
             connection = await db.getConnection();
 
             // Check if the supplier exists
