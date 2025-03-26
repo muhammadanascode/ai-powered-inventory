@@ -2,13 +2,13 @@ import db from "@/lib/db";
 import authenticate from "@/middlewares/auth";
 
 export default async function handler(req, res) {
-    if (req.method !== 'PUT') {
+    if (req.method !== 'PATCH') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
     authenticate(req, res, async () => {
         const { account_id, supplier_id } = req.query;
-        const { name, phone } = req.body;
+        const { name, phone_number } = req.body;
 
         // Validate query params
         if (!account_id || isNaN(account_id)) {
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         }
 
         // Validate request body
-        if (!name && !phone) {
+        if (!name && !phone_number) {
             return res.status(400).json({ error: "At least one of name or phone must be provided" });
         }
 
@@ -69,9 +69,9 @@ export default async function handler(req, res) {
                 updates.push("name = ?");
                 params.push(name);
             }
-            if (phone) {
+            if (phone_number) {
                 updates.push("phone = ?");
-                params.push(phone);
+                params.push(phone_number);
             }
             params.push(supplier_id); // For WHERE clause
 
@@ -84,7 +84,7 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: "Internal Server Error" });
         } finally {
             if (connection) {
-                connection.end();
+                connection.release();
             }
         }
     });
