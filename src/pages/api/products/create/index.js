@@ -1,9 +1,24 @@
 import db from "@/lib/db";
 import authenticate from "@/middlewares/auth";
 
+/**
+ * @route POST /api/Products/create
+ * @desc Add a new product to the database
+ * @access Private (Only account owners and managers can add products)
+ *
+ * @param {string} name - The name of the product (must be at least 3 characters long)
+ * @param {number} price - The price of the product (must be greater than 0)
+ * @param {number} quantity - The available quantity of the product (must be 0 or greater)
+ * @param {number} [supplier_id] - The optional ID of the supplier
+ * @param {string} account_id - The ID of the account (optional, sent in query params)
+ * @param {string} sub_account_id - The ID of the sub-account (optional, sent in query params)
+ * 
+ * @returns {object} - A success message and the ID of the newly created product
+ */
+
 export default async function handler(req, res) {
     // Allow only POST requests
-    if (req.method !== 'POST') {
+    if (req.method !== "POST") {
         return res.status(405).json({ error: "Method Not Allowed" });
     }
 
@@ -15,7 +30,7 @@ export default async function handler(req, res) {
 
         // Ensure either account_id or sub_account_id is provided
         if (!account_id && !sub_account_id) {
-            return res.status(400).json({ error: "Account id or sub account id is required" });
+            return res.status(400).json({ error: "Account ID or Sub Account ID is required" });
         }
 
         // Validate product name
