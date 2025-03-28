@@ -2,7 +2,7 @@ import db from '@/lib/db';
 import authenticate from '@/middlewares/auth';
 
 /**
- * @route DELETE /api/account/[account_id]/suppliers/[supplier_id]/Delete
+ * @route DELETE /api/suppliers/delete
  * @desc Delete a supplier
  * @access Private (Only authenticated users)
  */
@@ -31,14 +31,14 @@ export default async function handler(req, res) {
             // authorizing user
             if (account_id) {
                 if (req.user.account_id !== Number(account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only view suppliers from your own account" });
+                    return res.status(403).json({ error: "Forbidden: You can only delete suppliers from your own account" });
                 }
             } else {
                 if (req.user.sub_account_id !== Number(sub_account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only view suppliers from your own sub-account" });
+                    return res.status(403).json({ error: "Forbidden: You can only delete suppliers from your own sub-account" });
                 }
                 else if (req.user.account_type !== "manager") {
-                    return res.status(403).json({ error: "Only owner and manager can add new suppliers" })
+                    return res.status(403).json({ error: "Only owner and manager can delete suppliers" })
                 }
             }
 
