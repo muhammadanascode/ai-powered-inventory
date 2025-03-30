@@ -2,7 +2,7 @@ import db from '@/lib/db';
 import authenticate from '@/middlewares/auth';
 
 /**
- * @route POST /api/account/[account_id]/suppliers/create
+ * @route POST /api/suppliers/create
  * @desc Create a new supplier
  * @access Private (Only authenticated users)
  *
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
 
         const phoneRegex = /^\+[1-9]\d{1,3}\d{6,14}$/;
         if (!phone_number || phone_number.length > 15 || !phoneRegex.test(phone_number)) {
-            return res.status(400).json({ error: "Invalid phone number format" });
+            return res.status(400).json({ error: "Invalid phone number. Must start with a '+' (optional) and contain 8 to 15 digits." });
         }
 
         let connection;
@@ -59,11 +59,8 @@ export default async function handler(req, res) {
                 else if (req.user.account_type !== "manager") {
                     return res.status(403).json({ error: "Only owner and manager can add new suppliers" })
                 }
+                account_id = req.user.account_id; //assigning of in case it is null
             }
-
-            //assigning of in case it is null
-
-            account_id = req.user.account_id;
 
             connection = await db.getConnection();
 
