@@ -2,7 +2,7 @@ import db from "@/lib/db";
 import authenticate from "@/middlewares/auth";
 
 /**
- * @route GET /api/suppliers
+ * @route GET /api/suppliers/getAll
  * @desc Get suppliers for an account or sub_account
  * @access Private (Only logged-in users can access)
  *
@@ -38,22 +38,14 @@ export default async function handler(req, res) {
                 if (req.user.sub_account_id !== Number(sub_account_id)) {
                     return res.status(403).json({ error: "Forbidden: You can only view suppliers from your own sub-account" });
                 }
+                account_id = Number(req.user.account_id); //assigning the account_id if sub_account_id is provided
             }
 
             try {
                 connection = await db.getConnection();
 
-                // Build query based on provided parameters
-                let query = "SELECT * FROM Suppliers WHERE account_id = ? ";
-                const params = [];
-
-                if (account_id) {
-                    params.push(account_id);
-                } else{
-                  params.push(req.user.account_id)
-                }
-
-                const [suppliers] = await connection.execute(query, params);
+                // Execute query
+                const [suppliers] = await connection.execute("SELECT * FROM Suppliers WHERE account_id = ? ", [account_id]);
 
                 return res.status(200).json({ suppliers });
 
