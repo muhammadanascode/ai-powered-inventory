@@ -130,7 +130,11 @@ export default async function handler(req, res) {
              * Execute the update query
              */
             const query = `UPDATE Products SET ${updates.join(", ")} WHERE product_id = ? AND account_id = ?`;
-            await connection.execute(query, params);
+            const [result] = await connection.execute(query, params);
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: "Failed to made changes" });
+            }
 
             return res.status(200).json({ message: "Product updated successfully" });
         } catch (error) {
