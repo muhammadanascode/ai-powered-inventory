@@ -128,8 +128,6 @@ export default async function handler(req, res) {
             // Commit the transaction if all queries succeed
             await connection.commit();
 
-            // Delay the response by 3 seconds using setTimeout
-            await new Promise(resolve => setTimeout(resolve, 3000));
             // Return success response with the created order's ID
             return res.status(201).json({ message: "Order created successfully", order_id: order.insertId });
 
