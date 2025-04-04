@@ -18,11 +18,26 @@ export default async function handler(req, res) {
 
     // Ensure authentication middleware runs before executing main logic
     authenticate(req, res, async () => {
-        let { account_id, sub_account_id } = req.query;
+        let { account_id, sub_account_id, order_status, price, created_at } = req.query;
 
         // Validate that at least one ID is provided
         if (!account_id && !sub_account_id) {
             return res.status(400).json({ error: "Account ID or Sub Account ID is required" });
+        }
+
+        // checking if the filter for order_status is valid
+        if (order_status && !["pending", "completed", "cancelled"].includes(order_status)) {
+            return res.status(400).json({ error: "Invalid order status" });
+        }
+
+        // checking if the filter for price is valid
+        if (price && !["asc", "desc"].includes(price)) {
+            return res.status(400).json({ error: "Invalid price filter" });
+        }
+
+        // checking if the filter for created_at is valid
+        if (created_at && !["asc", "desc"].includes(created_at)) {
+            return res.status(400).json({ error: "Invalid created_at filter" });
         }
 
         let connection;
@@ -44,12 +59,24 @@ export default async function handler(req, res) {
             connection = await db.getConnection();
 
             // Build the query to fetch orders
-            const query = `SELECT o.total_price, o.order_status ,  c.name AS customer_name, c.phone_number,c.customer_id
+            let query = `SELECT o.order_id, o.total_price, o.order_status, o.created_at,
+             c.name AS customer_name, c.phone_number, c.customer_id
              FROM Orders o JOIN Customers c ON o.customer_id = c.customer_id
-             WHERE o.account_id = ?
-             ORDER BY o.created_at DESC `;
+             WHERE o.account_id = ?`;
 
             const params = [account_id];
+
+            if (order_status) {
+                query += ` AND o.order_status = ?`;
+                params.push(order_status);
+            }
+
+            const orderClauses = [];
+            if (price) orderClauses.push(`o.total_price ${price}`);
+            if (created_at) orderClauses.push(`o.created_at ${created_at}`);
+            if (orderClauses.length > 0) {
+                query += ` ORDER BY ` + orderClauses.join(', ');
+            }
 
             // Execute the query
             const [orders] = await connection.execute(query, params);
