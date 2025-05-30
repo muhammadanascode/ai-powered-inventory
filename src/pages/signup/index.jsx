@@ -13,7 +13,7 @@ const Signup = () => {
         console.log("Form Submitted:", name, email, password);
 
         //Calling post request to create account
-        try{
+        try {
             const response = await fetch('/api/account/createaccount', {
                 method: 'POST',
                 headers: {
@@ -23,7 +23,7 @@ const Signup = () => {
             });
 
             // Check if the response is not OK (status code 200-299)
-            if (!response.status==201) {
+            if (!response.status == 201) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to create account');
             }
@@ -40,19 +40,25 @@ const Signup = () => {
             const router = useRouter();
             router.push('/login');
 
-        }catch(error) {
-          console.error('Error creating account:', error);
-        }  
+        } catch (error) {
+            console.error('Error creating account:', error);
+        }
     };
 
     return (
         <div>
-            <AuthForm title="Create Your Personal Inventory" submitLabel="Signup" onSubmit={handleSubmit}>
+            <AuthForm
+                title="Create Your Personal Inventory"
+                submitLabel="Signup"
+                onSubmit={handleSubmit}
+                subtitle="Create a new account to effortlessly manage, track, and optimize your personal inventory with the power of AI">
+
                 <InputField
                     label="Name"
                     name="name"
                     type="text"
                     value={name}
+                    placeholder={"Name (minimum 8 letter starting with letter)"}
                     onChange={(e) => setName(e.target.value)}
                 />
                 <InputField
@@ -60,6 +66,7 @@ const Signup = () => {
                     name="email"
                     type="email"
                     value={email}
+                    placeholder={"eg:john1234@gmail.com"}
                     onChange={(e) => setEmail(e.target.value)}
                 />
                 <InputField
@@ -67,6 +74,7 @@ const Signup = () => {
                     name="password"
                     type="password"
                     value={password}
+                    placeholder={"Mnimum 8 letters (eg :12345678)"}
                     onChange={(e) => setPassword(e.target.value)}
                 />
             </AuthForm>
