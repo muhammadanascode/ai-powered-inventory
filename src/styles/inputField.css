@@ -1,0 +1,31 @@
+.input-field-div {
+  width: 90%;
+  display: block;
+  align-items: center;
+  margin-top: 10px;
+}
+.input-field {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.input-field:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.input-field.error {
+    border-color: #dc3545;
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+}
+
+.input-field::placeholder {
+    color: #aaa;
+    font-style: italic;
+    font-size: 14px;
+}
