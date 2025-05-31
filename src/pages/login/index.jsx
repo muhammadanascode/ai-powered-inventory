@@ -1,13 +1,39 @@
 import AuthForm from '@/components/AuthForm';
 import InputField from '@/components/InputField';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Login = () => {
 
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('')
+
+    useEffect(() => {
+        async function checkToken() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+
+            const response = await fetch('/api/account/verifyToken', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: token,
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.valid) {
+                router.push('/');
+            } else {
+                localStorage.removeItem('authToken');
+            }
+        }
+
+        checkToken();
+    }, []);
+
 
     const handleSubmit = async () => {
         console.log("Loginn")
