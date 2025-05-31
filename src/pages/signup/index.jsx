@@ -8,6 +8,7 @@ const Signup = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const router = useRouter();
 
     const handleSubmit = async () => {
         console.log("Form Submitted:", name, email, password);
@@ -37,7 +38,6 @@ const Signup = () => {
             setPassword('');
 
             //Redirecting to login page after successful account creation
-            const router = useRouter();
             router.push('/login');
 
         } catch (error) {
