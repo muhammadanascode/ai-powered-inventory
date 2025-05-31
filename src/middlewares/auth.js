@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 export default function authenticate(req, res, next) {
     // Extract token from headers
     const token = req.headers.authorization;
-    
+
     if (!token) {
         return res.status(401).json({ error: "Unauthorized: Token required" });
     }
@@ -20,6 +20,6 @@ export default function authenticate(req, res, next) {
         req.user = decoded; // Attach decoded user data to request object
         next(); // Proceed to the actual route handler
     } catch (error) {
-        return res.status(401).json({ error: "Invalid or expired token" });
+        return res.status(401).json({ valid: false, error: "Invalid or expired token" });
     }
 }
