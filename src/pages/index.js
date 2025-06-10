@@ -1,3 +1,4 @@
+import SideBar from "@/components/SideBar";
 import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -41,7 +42,7 @@ export default function Home() {
 
   return (
     <>
-      <div>Hello World</div>
+      <SideBar/>
     </>
   );
 }
