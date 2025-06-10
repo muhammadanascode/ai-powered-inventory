@@ -1,3 +1,4 @@
+import NavBar from "@/components/NavBar";
 import SideBar from "@/components/SideBar";
 import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
@@ -42,7 +43,10 @@ export default function Home() {
 
   return (
     <>
-      <SideBar/>
+      <div className={styles.container}>
+        <SideBar />
+        <NavBar />
+      </div>
     </>
   );
 }
