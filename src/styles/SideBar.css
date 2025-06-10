@@ -6,7 +6,7 @@
     padding: 20px;
     box-shadow: 0 0 0 1px rgb(255, 255, 255); /* Solid white "border" */
     z-index: 100;
-    position: sticky;
+    position: fixed;
     left: 0;
     top: 0;
     bottom: 0;
