@@ -1,5 +1,8 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import SideBar from './SideBar';
+import NavBar from './NavBar';
+import '../styles/Layout.css'; // Assuming you have a CSS file for styles
 
 const Layout = ({ children }) => {
   const router = useRouter();
