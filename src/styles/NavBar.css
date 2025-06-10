@@ -5,6 +5,9 @@
     display:  flex;
     justify-content: right;
     align-items: center;
+    position: sticky;
+    z-index: 50;
+    top: 0;
 }
 
 .subDiv{

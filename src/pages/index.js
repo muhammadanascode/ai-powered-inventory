@@ -43,10 +43,7 @@ export default function Home() {
 
   return (
     <>
-      <div className={styles.container}>
-        <SideBar />
-        <NavBar />
-      </div>
+    hello
     </>
   );
 }

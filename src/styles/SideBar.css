@@ -1,11 +1,15 @@
 .sidebar{
-    width: 15%;
+    width: 200px;
     height: 100vh;
     background-color: #2d93ff;
     margin:0;
     padding: 20px;
     box-shadow: 0 0 0 1px rgb(255, 255, 255); /* Solid white "border" */
-    z-index: 2;
+    z-index: 100;
+    position: sticky;
+    left: 0;
+    top: 0;
+    bottom: 0;
 }
 
 .head{
