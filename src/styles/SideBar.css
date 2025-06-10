@@ -1,0 +1,60 @@
+.sidebar{
+    width: 15%;
+    height: 100vh;
+    background-color: #2d93ff;
+    margin:0;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.head{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 80px;
+}
+
+.heading{
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 5px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.menu{
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    margin-top: 40px;
+}
+
+.menu-list{
+    list-style: none;
+}
+
+.menu-item{
+    color: white;
+    font-size: 18px;
+    margin-left: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.font {
+    margin-right: 10px;
+}
+
+.logoutDiv{
+    margin-top: 150px;
+    width: 100%;
+    text-align: center;
+}
+
+.logoutBtn{
+    text-decoration: none;
+    color: white ;
+}
