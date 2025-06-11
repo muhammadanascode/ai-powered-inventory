@@ -47,6 +47,7 @@
     cursor: pointer;
     text-decoration: none;
     transition: background-color 0.3s ease;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .font {
