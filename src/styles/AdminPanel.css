@@ -1,6 +1,134 @@
 .admin-container {
     width: 100%;
-    min-height: 91vh;
-    padding: 10px;
-    background-color: rgb(240, 240, 240);
+    padding: 20px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
+
+.admin-header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 30px;
+    
+}
+
+.admin-head{
+    font-size: 30px;
+    font-weight: bold;
+    margin-right: 5px;
+    color: black;
+}
+
+.admin-line{
+    width: 14%;
+    background-color: rgb(163, 163, 163);
+    height: 4px ;
+    border-radius: 5px;
+}
+
+.admin-select {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #2d93ff;
+    padding: 5px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin: 2px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.admin-select label {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.admin-select select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.admin-select select:hover,
+.admin-select select:focus {
+    border-color: #2d93ff;
+    background-color: #fff;
+}
+
+.admin-cards{
+    width: 100%;
+    height: 450px;
+    padding:10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.admin-card-block{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    width: 50%;
+    height: 410px;
+}
+
+.admin-card{
+    background-color: white;
+    border-radius: 10px;
+    width: 250px;
+    height: 150px;
+    text-align: center;
+    padding: 5px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Added box shadow */
+}
+
+.admin-card-1{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.admin-card-1 h2{
+    color: #2d93ff;
+}
+
+.admin-card-2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.admin-card-2 h2{
+    color: #2d93ff;
+}
+
+.admin-sales-chart {
+    width: 50%;
+    height: 410px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    text-align: center;
+}
+
+.admin-sales-bar-chart{
+    width:450px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
