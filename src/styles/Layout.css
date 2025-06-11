@@ -7,4 +7,6 @@
     flex: 1;
     margin-left: 200px;
     width: calc(100% - 200px); 
+    min-height: 100vh;
+    background-color: rgb(240, 240, 240);
 }
