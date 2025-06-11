@@ -14,13 +14,13 @@
     margin-right: 5px;
     height: 30px;
     color: white;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .subDiv1{
     width: 15%;
     display: flex;
     justify-content: center;
-    font-weight: bold;
 }
 
 .subDiv2{
