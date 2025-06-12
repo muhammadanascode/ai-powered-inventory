@@ -2,11 +2,15 @@
     height: 100vh;
     display: flex;
     flex-direction: row;
+    background-color: rgb(240, 240, 240);
 }
 .main-content{
     flex: 1;
-    margin-left: 200px;
     width: calc(100% - 200px); 
     min-height: 100vh;
-    background-color: rgb(240, 240, 240);
+    margin-left: 200px;
+}
+
+.full-width{
+    margin-left: 0px;
 }
