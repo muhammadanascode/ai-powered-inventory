@@ -14,6 +14,7 @@ import {
     ResponsiveContainer
 } from "recharts";
 
+// Sample data for sales and orders
 const salesData = [
     { name: "Jan", sales: 4000 },
     { name: "Feb", sales: 3000 },
@@ -33,7 +34,8 @@ const AdminPanel = () => {
                     <div className="admin-line"></div>
                 </div>
 
-                {/* Date selection option */}
+                {/* Date selection dropdowns */}
+                {/* TODO: Replace with account registration month/year if needed */}
                 <div className="admin-select">
                     <label htmlFor="month-select">Month: </label>
                     <select id="month-select" className="admin-select">
@@ -55,6 +57,9 @@ const AdminPanel = () => {
             </div>
 
             <div className="admin-cards">
+
+                {/* Card showing total sales */}
+                {/* TODO: Replace with actual sales data */}
                 <div className="admin-card-block">
                     <div className="admin-card admin-card-1">
                         <h2>Total Sales</h2>
@@ -70,12 +75,12 @@ const AdminPanel = () => {
                                 })}
                             />
                         </div>
-
-
                         <h4>Rs. 1,00,000</h4>
                         <p className="comparison positive">▲ Up 15% from last month</p>
                     </div>
 
+                    {/* Card showing total number of orders */}
+                    {/* TODO: Replace with actual order data */}
                     <div className="admin-card admin-card-2">
                         <h2>Total Orders</h2>
 
@@ -90,10 +95,12 @@ const AdminPanel = () => {
                                 })}
                             />
                         </div>
-
                         <h4>54678</h4>
                         <p className="comparison positive">▲ Up 15% from last month</p>
                     </div>
+
+                    {/* Bar chart showing monthly sales */}
+                    {/* TODO: Replace with actual sales data */}
                     <div className="admin-card admin-sales-bar-chart">
                         <h2>Monthly Sales (Bar Chart)</h2>
                         <ResponsiveContainer width="100%" height={150}>
@@ -108,6 +115,8 @@ const AdminPanel = () => {
                     </div>
                 </div>
 
+                {/* Line chart showing sales trend over months */}
+                {/* TODO: Replace with actual trend data */}
                 <div className="admin-card admin-sales-chart">
                     <h2>Sales Overview</h2>
                     <ResponsiveContainer width="100%" height={250}>
