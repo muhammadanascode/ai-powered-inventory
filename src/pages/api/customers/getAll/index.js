@@ -16,9 +16,12 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: "Method Not Allowed" });
     }
 
+    //  Disable caching
+    res.setHeader("Cache-Control", "no-store");
+
     // Ensure authentication middleware runs before executing main logic
     authenticate(req, res, async () => {
-        let { account_id, sub_account_id } = req.query;
+        let { account_id, sub_account_id } = req.user;
 
         // Validate that at least one ID is provided
         if (!account_id && !sub_account_id) {
