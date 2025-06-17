@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import InputField from '@/components/InputField';
+import getToken from '@/utils/getToken';
 
 // Helper function to truncate long text for better display in UI
 const truncate = (text, length = 20) => {
@@ -13,6 +14,10 @@ const truncate = (text, length = 20) => {
 const Customers = () => {
     // State for storing customer list
     const [customers, setCustomers] = useState([]);
+
+    //state for error message
+    const [error, setError] = useState(false);
+    const [message , setMessage]  = useState('')
 
     // States for form visibility and input fields
     const [showForm, setShowForm] = useState(false);
@@ -26,37 +31,85 @@ const Customers = () => {
         setShowForm(prev => !prev);
     };
 
-    // Fetch customer list from backend API on component mount
-    useEffect(() => {
-        function getToken() {
-            const token = localStorage.getItem('authToken');
-            return token || null;
+    // function to fetch customers 
+    const getCustomers = async () => {
+        const token = getToken();
+        if (!token) return;
+
+        try {
+            const response = await fetch('/api/customers/getAll', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                }
+            });
+
+            if (response.status !== 200) throw new Error('Network response was not ok');
+
+            const data = await response.json();
+            setCustomers(data.customers || []);
+        } catch (error) {
+            console.error('Error fetching customers:', error);
         }
+    };
 
-        const getCustomers = async () => {
-            const token = getToken();
-            if (!token) return;
 
-            try {
-                const response = await fetch('/api/customers/getAll', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `${token}`
-                    }
-                });
-
-                if (response.status !== 200) throw new Error('Network response was not ok');
-
-                const data = await response.json();
-                setCustomers(data.customers || []);
-            } catch (error) {
-                console.error('Error fetching customers:', error);
-            }
-        };
-
+    
+    useEffect(() => {
+        // fetching customers
         getCustomers();
     }, []);
+
+
+    //inserting new customer
+    const handleSubmit = async () => {
+
+        if (!name || !email || !phoneNumber || !address) {
+            setError(true)
+            setMessage("Please fill out all required fields")
+            return ;
+        }
+ 
+        //fetching token from local storage
+        const token = getToken();
+
+        const response = await fetch(`api/customers/create`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`
+            },
+            body: JSON.stringify({
+                name,
+                email,
+                phone_number: phoneNumber,
+                address
+            })
+        })
+
+        //parsing response
+        const data = await response.json();
+
+        if (response.status !== 201) {
+            setError(true);
+            setMessage(data.error);
+            return ;
+        }
+
+        //clear form fields after submission and close the form
+        setAddress('');
+        setEmail('');
+        setName('');
+        setPhoneNumber('');
+        setError(false)
+        setMessage('');
+        setShowForm(false);
+
+        //updating customers list
+        getCustomers() ;
+
+    }
 
     return (
         <div className={styles.container}>
@@ -96,7 +149,7 @@ const Customers = () => {
                         <InputField
                             label={"Phone"}
                             name={"phone_number"}
-                            type={"number"}
+                            type={"tel"}
                             value={phoneNumber}
                             placeholder={"+923242650627"}
                             onChange={(e) => setPhoneNumber(e.target.value)}
@@ -113,9 +166,14 @@ const Customers = () => {
 
                         {/* Submit and Cancel buttons */}
                         <div className={styles.formButtons}>
-                            <button type="submit" className={styles.submitBtn}>Submit</button>
+                            <button type="submit" className={styles.submitBtn} onClick={handleSubmit}>Submit</button>
                             <button type="button" className={styles.cancelBtn} onClick={() => setShowForm(false)}>Cancel</button>
                         </div>
+
+                        {/* Display error message if any */}
+                        {error ? <div className={styles.errorMessage}>
+                            <p> * {message}</p>
+                             </div> : null }
                     </div>
                 </div>
             )}
