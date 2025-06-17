@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
     authenticate(req, res, async () => {
         const { name, phone_number, email, address } = req.body;
-        let { account_id, sub_account_id } = req.query;
+        let { account_id, sub_account_id } = req.user;
 
         // Validate account_id
         if (!account_id && !sub_account_id) {
@@ -35,13 +35,13 @@ export default async function handler(req, res) {
 
         /**
          * phone number regex validation
-         * Ensures 8 to 17 character length
+         * Ensures 8 to 15 character length
          *  No spaces, dashes, or special characters
          * Valid international format
          * must start with a '+' sign
            */
 
-        const phoneRegex = /^\+[1-9]\d{1,3}\d{6,14}$/;
+        const phoneRegex = /^\+[1-9]\d{7,14}$/;
         if (!phone_number || phone_number.length > 15 || !phoneRegex.test(phone_number)) {
             return res.status(400).json({ error: "Invalid phone number. Must start with a '+' (optional) and contain 8 to 15 digits." });
         }
