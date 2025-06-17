@@ -192,10 +192,10 @@ const Customers = () => {
             {/* Render customer list */}
             {customers.map((customer) => (
                 <div className={styles.customers} key={customer.customer_id}>
-                    <p title={customer.name}>{truncate(customer.name)}</p>
-                    <p title={customer.email}>{truncate(customer.email)}</p>
-                    <p title={customer.phone}>{customer.phone_number}</p>
-                    <p title={customer.address}>{truncate(customer.address)}</p>
+                    <div className={styles.nameDiv}><p title={customer.name}>{truncate(customer.name)}</p></div>
+                    <div className={styles.emailDiv}><p title={customer.email}>{truncate(customer.email)}</p></div>
+                    <div className={styles.phoneNumberDiv}><p title={customer.phone}>{customer.phone_number}</p></div>
+                    <div className={styles.addressDiv}><p title={customer.address}>{truncate(customer.address)}</p></div>
                 </div>
             ))}
         </div>
