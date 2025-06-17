@@ -17,7 +17,7 @@ const Customers = () => {
 
     //state for error message
     const [error, setError] = useState(false);
-    const [message , setMessage]  = useState('')
+    const [message, setMessage] = useState('')
 
     // States for form visibility and input fields
     const [showForm, setShowForm] = useState(false);
@@ -55,7 +55,7 @@ const Customers = () => {
     };
 
 
-    
+
     useEffect(() => {
         // fetching customers
         getCustomers();
@@ -68,9 +68,9 @@ const Customers = () => {
         if (!name || !email || !phoneNumber || !address) {
             setError(true)
             setMessage("Please fill out all required fields")
-            return ;
+            return;
         }
- 
+
         //fetching token from local storage
         const token = getToken();
 
@@ -94,7 +94,7 @@ const Customers = () => {
         if (response.status !== 201) {
             setError(true);
             setMessage(data.error);
-            return ;
+            return;
         }
 
         //clear form fields after submission and close the form
@@ -106,8 +106,8 @@ const Customers = () => {
         setMessage('');
         setShowForm(false);
 
-        //updating customers list
-        getCustomers() ;
+        // Add the new customer to the existing list
+        setCustomers(prev => [...prev, data.customer]);
 
     }
 
@@ -173,7 +173,7 @@ const Customers = () => {
                         {/* Display error message if any */}
                         {error ? <div className={styles.errorMessage}>
                             <p> * {message}</p>
-                             </div> : null }
+                        </div> : null}
                     </div>
                 </div>
             )}
