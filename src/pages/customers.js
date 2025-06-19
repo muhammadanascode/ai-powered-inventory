@@ -2,7 +2,7 @@ import SearchBar from '@/components/SearchBar';
 import styles from '../styles/Customers.module.css';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import InputField from '@/components/InputField';
 import getToken from '@/utils/getToken';
 
@@ -25,6 +25,12 @@ const Customers = () => {
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [address, setAddress] = useState('');
+
+    //state to show delete form
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+    //state to track customer id to be deleted , or edited
+    const [customerId, setCustomerId] = useState(null);
 
     // Toggle form visibility
     const handleToggleForm = () => {
@@ -109,6 +115,36 @@ const Customers = () => {
         // Add the new customer to the existing list
         setCustomers(prev => [...prev, data.customer]);
 
+    }
+
+    //Edit customer function
+    const deleteCustomer = async () => {
+
+        try {
+            // get token from local storage
+            const token = getToken();
+
+            // Delete customer API call
+            const response = await fetch(`/api/customers/delete?customer_id=${customerId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                }
+            });
+            if (response.status !== 200) {
+                throw new Error('Failed to delete customer');
+            }
+
+
+        } catch (error) {
+            console.log("Error Deleting customer", error);
+
+        }
+        finally {
+            //closing delete confirm modal
+            setShowDeleteConfirm(false);
+        }
     }
 
     return (
@@ -196,8 +232,41 @@ const Customers = () => {
                     <div className={styles.emailDiv}><p title={customer.email}>{truncate(customer.email)}</p></div>
                     <div className={styles.phoneNumberDiv}><p title={customer.phone}>{customer.phone_number}</p></div>
                     <div className={styles.addressDiv}><p title={customer.address}>{truncate(customer.address)}</p></div>
+                    <div className={styles.options}>
+                        <FontAwesomeIcon
+                            icon={faEdit}
+                            className={styles.editIcon}
+                            title="Edit"
+                            onClick={() => deleteCustomer(customer.customer_id)}
+                        />
+                        <FontAwesomeIcon
+                            icon={faTrash}
+                            className={styles.deleteIcon}
+                            title="Delete"
+                            onClick={() => {
+                                setShowDeleteConfirm(true)
+                                setCustomerId(customer.customer_id)
+                            }}
+                        />
+                    </div>
                 </div>
             ))}
+            {showDeleteConfirm && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalBox}>
+                        <p>Are you sure you want to delete this customer?</p>
+                        <div className={styles.modalButtons}>
+                            <button className={styles.submitBtn} onClick={deleteCustomer}>Yes, Delete</button>
+                            <button className={styles.cancelBtn} onClick={() => {
+                                setShowDeleteConfirm(false)
+                                setCustomerId(null)
+                            }}>
+                                Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };
