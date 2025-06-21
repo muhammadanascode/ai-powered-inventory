@@ -251,6 +251,8 @@ const Customers = () => {
                     </div>
                 </div>
             ))}
+
+            {/* Delete confirmation popup */}
             {showDeleteConfirm && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalBox}>
