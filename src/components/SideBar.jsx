@@ -30,12 +30,12 @@ const SideBar = () => {
                 </div>
                 <ul className="menu">
                     <li className="menu-list">
-                        <a href="" className="menu-item">
+                        <a href="/customers" className="menu-item">
                             <FontAwesomeIcon icon={faUser} className="font" /> Customers
                         </a>
                     </li>
                     <li className="menu-list">
-                        <a href="" className="menu-item">
+                        <a href="/suppliers" className="menu-item">
                             <FontAwesomeIcon icon={faTruck} className="font" /> Suppliers
                         </a>
                     </li>
