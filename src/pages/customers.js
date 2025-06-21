@@ -32,6 +32,9 @@ const Customers = () => {
     //state to track customer id to be deleted , or edited
     const [customerId, setCustomerId] = useState(null);
 
+    //state to track if the form is in edit mode
+    const [isEditMode, setIsEditMode] = useState(false);
+
     // Toggle form visibility
     const handleToggleForm = () => {
         setShowForm(prev => !prev);
@@ -68,7 +71,7 @@ const Customers = () => {
     }, []);
 
 
-    //inserting new customer
+    //inserting new customer or editing existing customer
     const handleSubmit = async () => {
 
         if (!name || !email || !phoneNumber || !address) {
@@ -80,8 +83,16 @@ const Customers = () => {
         //fetching token from local storage
         const token = getToken();
 
-        const response = await fetch(`api/customers/create`, {
-            method: "POST",
+        // url for creating or updating customer
+        const url = isEditMode
+            ? `/api/customers/update?customer_id=${customerId}`
+            : `/api/customers/create`;
+
+        // method for API call
+        const method = isEditMode ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `${token}`
@@ -97,23 +108,39 @@ const Customers = () => {
         //parsing response
         const data = await response.json();
 
-        if (response.status !== 201) {
+        if ((isEditMode && response.status !== 200) || (!isEditMode && response.status !== 201)) {
             setError(true);
             setMessage(data.error);
             return;
         }
 
-        //clear form fields after submission and close the form
-        setAddress('');
-        setEmail('');
-        setName('');
-        setPhoneNumber('');
-        setError(false)
-        setMessage('');
-        setShowForm(false);
+        // Update local state
+        if (isEditMode) {
+            setCustomers(prev =>
+                prev.map(c =>
+                    c.customer_id === customerId ? { ...c, name, email, phone_number: phoneNumber, address } : c
+                )
+            );
+        } else {
+            setCustomers(prev => [...prev, {
+                customer_id: data.customer_id, // assuming the API returns the new customer ID
+                name,
+                email,
+                phone_number: phoneNumber,
+                address
+            }]);
+        }
 
-        // Add the new customer to the existing list
-        setCustomers(prev => [...prev, data.customer]);
+        //clear form fields after submission and close the form
+        setName('');
+        setEmail('');
+        setPhoneNumber('');
+        setAddress('');
+        setCustomerId(null);
+        setIsEditMode(false);
+        setShowForm(false);
+        setError(false);
+        setMessage('');
 
     }
 
@@ -136,6 +163,8 @@ const Customers = () => {
                 throw new Error('Failed to delete customer');
             }
 
+            // set customers 
+            setCustomers(prev => prev.filter(c => c.customer_id !== customerId));
 
         } catch (error) {
             console.log("Error Deleting customer", error);
@@ -157,11 +186,11 @@ const Customers = () => {
                 </button>
             </div>
 
-            {/* Full-screen modal form for adding a new customer */}
+            {/* Full-screen modal form for adding a new customer or to edit the customer data */}
             {showForm && (
                 <div className={styles.overlay}>
                     <div className={styles.formModal}>
-                        <h3>Add New Customer</h3>
+                        <h3>{isEditMode ? 'Edit Customer' : 'Add New Customer'}</h3>
 
                         {/* Input fields for new customer */}
                         <InputField
@@ -203,7 +232,19 @@ const Customers = () => {
                         {/* Submit and Cancel buttons */}
                         <div className={styles.formButtons}>
                             <button type="submit" className={styles.submitBtn} onClick={handleSubmit}>Submit</button>
-                            <button type="button" className={styles.cancelBtn} onClick={() => setShowForm(false)}>Cancel</button>
+                            <button type="button" className={styles.cancelBtn}
+                                onClick={() => {
+                                    setShowForm(false);
+                                    setIsEditMode(false);
+                                    setCustomerId(null);
+                                    setName('');
+                                    setEmail('');
+                                    setPhoneNumber('');
+                                    setAddress('');
+                                    setError(false);
+                                    setMessage('');
+                                }}
+                            >Cancel</button>
                         </div>
 
                         {/* Display error message if any */}
@@ -237,7 +278,15 @@ const Customers = () => {
                             icon={faEdit}
                             className={styles.editIcon}
                             title="Edit"
-                            onClick={() => deleteCustomer(customer.customer_id)}
+                            onClick={() => {
+                                setIsEditMode(true);
+                                setShowForm(true);
+                                setCustomerId(customer.customer_id);
+                                setName(customer.name);
+                                setEmail(customer.email);
+                                setPhoneNumber(customer.phone_number);
+                                setAddress(customer.address);
+                            }}
                         />
                         <FontAwesomeIcon
                             icon={faTrash}
