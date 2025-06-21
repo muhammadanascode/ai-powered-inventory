@@ -18,7 +18,8 @@ export default async function handler(req, res) {
     }
 
     authenticate(req, res, async () => {
-        let { account_id, sub_account_id, customer_id } = req.query;
+        let { account_id, sub_account_id } = req.user;
+        let { customer_id } = req.query;
 
         // Validate account_id
         if (!account_id && !sub_account_id) {
@@ -51,7 +52,7 @@ export default async function handler(req, res) {
 
             connection = await db.getConnection();
 
-            // Check if the supplier exists
+            // Check if the customer exists
             const [customer] = await connection.execute(
                 "SELECT * FROM customers WHERE customer_id = ? AND account_id = ?",
                 [customer_id, account_id]
