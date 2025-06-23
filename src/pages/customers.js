@@ -72,7 +72,7 @@ const Customers = () => {
     //inserting new customer or editing existing customer
     const handleSubmit = async () => {
 
-        if (!name || !email || !phoneNumber || !address) {
+        if (!name || !phoneNumber || !address) {
             setError(true)
             setMessage("Please fill out all required fields")
             return;
@@ -267,10 +267,10 @@ const Customers = () => {
             {/* Render customer list */}
             {customers.map((customer) => (
                 <div className={styles.customers} key={customer.customer_id}>
-                    <div className={styles.nameDiv}><p title={customer.name}>{truncate(customer.name , 6)}</p></div>
-                    <div className={styles.emailDiv}><p title={customer.email}>{truncate(customer.email , 21)}</p></div>
-                    <div className={styles.phoneNumberDiv}><p title={customer.phone}>{truncate(customer.phone_number,18)}</p></div>
-                    <div className={styles.addressDiv}><p title={customer.address}>{truncate(customer.address ,18)}</p></div>
+                    <div className={styles.nameDiv}><p title={customer.name}>{truncate(customer.name, 6)}</p></div>
+                    <div className={styles.emailDiv}><p title={customer.email}>{customer.email ? truncate(customer.email, 21) : "N/A"}</p></div>
+                    <div className={styles.phoneNumberDiv}><p title={customer.phone}>{truncate(customer.phone_number, 18)}</p></div>
+                    <div className={styles.addressDiv}><p title={customer.address}>{truncate(customer.address, 18)}</p></div>
                     <div className={styles.options}>
                         <FontAwesomeIcon
                             icon={faEdit}
