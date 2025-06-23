@@ -25,7 +25,7 @@ const suppliers = () => {
     const [suppliers, setSuppliers] = useState([]);
 
     // state for supplier id
-    const [supplierId, setsupplierId] = useState(null);
+    const [supplierId, setSupplierId] = useState(null);
 
     // state for error handling
     const [error, setError] = useState(false);
@@ -59,7 +59,7 @@ const suppliers = () => {
             // Parse the response data
             const data = await response.json();
             console.log(data.suppliers);
-            
+
             setSuppliers(data.suppliers);
 
         } catch (error) {
@@ -81,6 +81,74 @@ const suppliers = () => {
 
     const handleSubmit = async () => {
 
+        // check all fields are filled
+        if (!name || !phoneNumber || !address) {
+            setError(true)
+            setMessage("Please fill out all required fields")
+            return;
+        }
+
+        //fetching token from local storage
+        const token = getToken();
+
+        // url for creating or updating customer
+        const url = isEditMode
+            ? `/api/suppliers/update?supplier_id=${supplierId}`
+            : `/api/suppliers/create`;
+
+        // method for API call
+        const method = isEditMode ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`
+            },
+            body: JSON.stringify({
+                name,
+                email,
+                phone_number: phoneNumber,
+                address
+            })
+        })
+
+        //parsing response
+        const data = await response.json();
+
+        if ((isEditMode && response.status !== 200) || (!isEditMode && response.status !== 201)) {
+            setError(true);
+            setMessage(data.error);
+            return;
+        }
+
+        // Update local state
+        if (isEditMode) {
+            setSuppliers(prev =>
+                prev.map(c =>
+                    c.supplier_id === supplierId ? { ...c, name, email, phone_number: phoneNumber, address } : c
+                )
+            );
+        } else {
+            setSuppliers(prev => [...prev, {
+                supplier_id: data.supplierId, // assuming the API returns the new customer ID
+                name,
+                email,
+                phone_number: phoneNumber,
+                address
+            }]);
+        }
+
+        //clear form fields after submission and close the form
+        setName('');
+        setEmail('');
+        setPhoneNumber('');
+        setAddress('');
+        setSupplierId(null);
+        setIsEditMode(false);
+        setShowForm(false);
+        setError(false);
+        setMessage('');
     }
 
     const deleteCustomer = async () => {
@@ -148,7 +216,7 @@ const suppliers = () => {
                                 onClick={() => {
                                     setShowForm(false);
                                     setIsEditMode(false);
-                                    setsupplierId(null);
+                                    setSupplierId(null);
                                     setName('');
                                     setEmail('');
                                     setPhoneNumber('');
@@ -180,10 +248,10 @@ const suppliers = () => {
             {/* Render supplier list */}
             {suppliers.map((supplier) => (
                 <div className={styles.suppliers} key={supplier.supplier_id}>
-                    <div className={styles.nameDiv}><p title={supplier.name}>{truncate(supplier.name , 6)}</p></div>
-                    <div className={styles.emailDiv}><p title={supplier.email}>{truncate(supplier.email ,21)}</p></div>
-                    <div className={styles.phoneNumberDiv}><p title={supplier.phone}>{truncate(supplier.phone_number,18)}</p></div>
-                    <div className={styles.addressDiv}><p title={supplier.address}>{truncate(supplier.address,18)}</p></div>
+                    <div className={styles.nameDiv}><p title={supplier.name}>{truncate(supplier.name, 6)}</p></div>
+                    <div className={styles.emailDiv}><p title={supplier.email}>{supplier.email ? truncate(supplier.email, 21) : "N/A"}</p></div>
+                    <div className={styles.phoneNumberDiv}><p title={supplier.phone}>{truncate(supplier.phone_number, 18)}</p></div>
+                    <div className={styles.addressDiv}><p title={supplier.address}>{truncate(supplier.address, 18)}</p></div>
                     <div className={styles.options}>
                         <FontAwesomeIcon
                             icon={faEdit}
@@ -192,7 +260,7 @@ const suppliers = () => {
                             onClick={() => {
                                 setIsEditMode(true);
                                 setShowForm(true);
-                                setsupplierId(supplier.supplier_id);
+                                setSupplierId(supplier.supplier_id);
                                 setName(supplier.name);
                                 setEmail(supplier.email);
                                 setPhoneNumber(supplier.phone_number);
@@ -205,7 +273,7 @@ const suppliers = () => {
                             title="Delete"
                             onClick={() => {
                                 setShowDeleteConfirm(true)
-                                setsupplierId(supplier.supplier_id)
+                                setSupplierId(supplier.supplier_id)
                             }}
                         />
                     </div>
