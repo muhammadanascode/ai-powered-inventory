@@ -151,8 +151,35 @@ const suppliers = () => {
         setMessage('');
     }
 
-    const deleteCustomer = async () => {
+    const deleteSupplier = async () => {
 
+        try {
+            // get token from local storage
+            const token = getToken();
+
+            // Delete customer API call
+            const response = await fetch(`/api/suppliers/delete?supplier_id=${supplierId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
+                }
+            });
+            if (response.status !== 200) {
+                throw new Error('Failed to delete supplier');
+            }
+
+            // set customers 
+            setSuppliers(prev => prev.filter(c => c.supplier_id !== supplierId));
+
+        } catch (error) {
+            console.log("Error Deleting supplier", error);
+
+        }
+        finally {
+            //closing delete confirm modal
+            setShowDeleteConfirm(false);
+        }
     }
 
     return (
@@ -284,9 +311,9 @@ const suppliers = () => {
             {showDeleteConfirm && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalBox}>
-                        <p>Are you sure you want to delete this customer?</p>
+                        <p>Are you sure you want to delete this supplier?</p>
                         <div className={styles.modalButtons}>
-                            <button className={styles.submitBtn} onClick={deleteCustomer}>Yes, Delete</button>
+                            <button className={styles.submitBtn} onClick={deleteSupplier}>Yes, Delete</button>
                             <button className={styles.cancelBtn} onClick={() => {
                                 setShowDeleteConfirm(false)
                                 setCustomerId(null)
