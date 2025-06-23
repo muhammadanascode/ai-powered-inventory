@@ -33,7 +33,7 @@ export default async function handler(req, res) {
         /**
          * Validate request body - All fields must be provided for PUT
          */
-        if (!name || !email || !phone_number || !address) {
+        if (!name || !phone_number || !address) {
             return res.status(400).json({ error: "All fields (name, email, phone_number, address) are required" });
         }
 
@@ -80,7 +80,7 @@ export default async function handler(req, res) {
             }
 
             const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-            if (!emailRegex.test(email)) {
+            if (email && !emailRegex.test(email)) {
                 return res.status(400).json({ error: "Invalid Email format" });
             }
 
