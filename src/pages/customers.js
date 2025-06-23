@@ -5,11 +5,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import InputField from '@/components/InputField';
 import getToken from '@/utils/getToken';
+import truncate from '@/utils/truncate';
 
-// Helper function to truncate long text for better display in UI
-const truncate = (text, length = 20) => {
-    return text.length > length ? text.substring(0, length) + '...' : text;
-};
+
 
 const Customers = () => {
     // State for storing customer list
@@ -269,10 +267,10 @@ const Customers = () => {
             {/* Render customer list */}
             {customers.map((customer) => (
                 <div className={styles.customers} key={customer.customer_id}>
-                    <div className={styles.nameDiv}><p title={customer.name}>{truncate(customer.name)}</p></div>
-                    <div className={styles.emailDiv}><p title={customer.email}>{truncate(customer.email)}</p></div>
-                    <div className={styles.phoneNumberDiv}><p title={customer.phone}>{customer.phone_number}</p></div>
-                    <div className={styles.addressDiv}><p title={customer.address}>{truncate(customer.address)}</p></div>
+                    <div className={styles.nameDiv}><p title={customer.name}>{truncate(customer.name , 6)}</p></div>
+                    <div className={styles.emailDiv}><p title={customer.email}>{truncate(customer.email , 21)}</p></div>
+                    <div className={styles.phoneNumberDiv}><p title={customer.phone}>{truncate(customer.phone_number,18)}</p></div>
+                    <div className={styles.addressDiv}><p title={customer.address}>{truncate(customer.address ,18)}</p></div>
                     <div className={styles.options}>
                         <FontAwesomeIcon
                             icon={faEdit}
