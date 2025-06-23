@@ -1,101 +1,113 @@
 import db from "@/lib/db";
 import authenticate from "@/middlewares/auth";
 
+/**
+ * @description Handles updating a supplier in the database using PUT (full update).
+ * @param {import('next').NextApiRequest} req - The API request object.
+ * @param {import('next').NextApiResponse} res - The API response object.
+ * @returns {Promise<void>}
+ */
 export default async function handler(req, res) {
-    if (req.method !== 'PATCH') {
+    // Only allow PUT method for full updates
+    if (req.method !== 'PUT') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
+    // Authenticate the user
     authenticate(req, res, async () => {
-        const { account_id, sub_account_id, supplier_id } = req.query;
-        const { name, phone_number } = req.body;
+        let { account_id, sub_account_id } = req.user;
+        let { supplier_id } = req.query
+        const { name, email, phone_number, address } = req.body;
 
-        // Validate query params
+        /**
+         * Validate query parameters
+         */
         if (!account_id && !sub_account_id) {
             return res.status(400).json({ error: "Account id or sub account id is required" });
         }
 
         if (!supplier_id || isNaN(supplier_id)) {
-            return res.status(400).json({ error: "Valid supplier_id is required" })
+            return res.status(400).json({ error: "Valid supplier_id is required" });
         }
 
-        // Validate request body
-        if (!name && !phone_number) {
-            return res.status(400).json({ error: "At least one of name or phone must be provided" });
+        /**
+         * Validate request body - All fields must be provided for PUT
+         */
+        if (!name || !phone_number || !address) {
+            return res.status(400).json({ error: "All fields (name, email, phone_number, address) are required" });
         }
 
         let connection;
         try {
-            // authorizing user
-            if (account_id) {
-                if (req.user.account_id !== Number(account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only view suppliers from your own account" });
-                }
-            } else {
-                if (req.user.sub_account_id !== Number(sub_account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only view suppliers from your own sub-account" });
-                }
-                else if (req.user.account_type !== "manager") {
-                    return res.status(403).json({ error: "Only owner and manager can add new suppliers" })
+            /**
+             * Authorization - Ensure only managers and owners can update the suppliers
+             */
+            if (sub_account_id) {
+                if (req.user.account_type !== "manager") {
+                    return res.status(403).json({ error: "Only managers of sub-accounts can update suppliers" });
                 }
             }
 
-            //assigning of in case it is null
-
-            account_id = req.user.account_id;
-
+            /**
+             * Establish database connection
+             */
             connection = await db.getConnection();
 
-            // Check if supplier exists
+            /**
+             * Check if the supplier exists in the database
+             */
             const [supplier] = await connection.execute(
-                "SELECT * FROM Suppliers WHERE supplier_id = ? AND account_id = ?",
+                "SELECT * FROM suppliers WHERE supplier_id = ? AND account_id = ?",
                 [supplier_id, account_id]
             );
 
             if (supplier.length === 0) {
-                return res.status(404).json({ error: "Supplier not found" });
-            }
-
-            //Validating name and phone number format
-
-            if (name && name.trim().length < 3) {
-                return res.status(400).json({ error: "name length can't be less than 3" })
+                return res.status(404).json({ error: "supplier not found" });
             }
 
             /**
-         * phone number regex validation
-         * Ensures 8 to 17 character length
-         *  No spaces, dashes, or special characters
-         * Valid international format
-         * must start with a '+' sign
-           */
+             * Ensure the supplier belongs to the authenticated user's account
+             */
+            if (supplier[0].account_id !== account_id) {
+                return res.status(403).json({ error: "You are not authorized to update this supplier" });
+            }
+
+            /**
+             * Validate individual fields
+             */
+            if (name.trim().length < 3) {
+                return res.status(400).json({ error: "supplier name must be at least 3 characters long" });
+            }
+
+            const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+            if (email && !emailRegex.test(email)) {
+                return res.status(400).json({ error: "Invalid Email format" });
+            }
 
             const phoneRegex = /^\+[1-9]\d{1,3}\d{6,14}$/;
-            if (phone_number && (phone_number.length > 15 || !phoneRegex.test(phone_number))) {
-                return res.status(400).json({ error: "Invalid phone number format" });
+            if (phone_number.length > 15 || !phoneRegex.test(phone_number)) {
+                return res.status(400).json({ error: "Invalid phone number. Must start with a '+' and contain 8 to 15 digits." });
             }
 
-            // Construct update query dynamically
-            const updates = [];
-            const params = [];
-            if (name) {
-                updates.push("name = ?");
-                params.push(name);
-            }
-            if (phone_number) {
-                updates.push("phone = ?");
-                params.push(phone_number);
-            }
-            params.push(supplier_id); // For WHERE clause
+            /**
+             * Perform the full update using PUT
+             */
+            await connection.execute(
+                `UPDATE suppliers 
+                 SET name = ?, email = ?, phone_number = ?, address = ?, updated_at = CURRENT_TIMESTAMP 
+                 WHERE supplier_id = ? AND account_id = ?`,
+                [name.trim(), email, phone_number, address, supplier_id, account_id]
+            );
 
-            const query = `UPDATE Suppliers SET ${updates.join(", ")} WHERE supplier_id = ?`;
-            await connection.execute(query, params);
-
-            return res.status(200).json({ message: "Supplier updated successfully" });
+            // Return success response
+            return res.status(200).json({ message: "supplier updated successfully" });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: "Internal Server Error" });
         } finally {
+            /**
+             * Ensure the database connection is released
+             */
             if (connection) {
                 connection.release();
             }
