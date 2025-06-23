@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
     // Ensure authentication middleware runs before executing main logic
     authenticate(req, res, async () => {
-        const { account_id, sub_account_id } = req.query;
+        const { account_id, sub_account_id } = req.user;
 
         // Validate that at least one ID is provided
         if (!account_id && !sub_account_id) {
@@ -28,18 +28,6 @@ export default async function handler(req, res) {
         try {
 
             let connection;
-
-            // authorizing user
-            if (account_id) {
-                if (req.user.account_id !== Number(account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only view suppliers from your own account" });
-                }
-            } else {
-                if (req.user.sub_account_id !== Number(sub_account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only view suppliers from your own sub-account" });
-                }
-                account_id = Number(req.user.account_id); //assigning the account_id if sub_account_id is provided
-            }
 
             try {
                 connection = await db.getConnection();
