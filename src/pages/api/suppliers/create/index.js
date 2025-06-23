@@ -18,56 +18,59 @@ export default async function handler(req, res) {
     }
 
     authenticate(req, res, async () => {
-        const { name, phone_number } = req.body;
-        let { account_id, sub_account_id } = req.query;
+        const { name, phone_number, email, address } = req.body;
+        let { account_id, sub_account_id } = req.user;
 
         // Validate account_id
         if (!account_id && !sub_account_id) {
             return res.status(400).json({ error: "Account id or sub account id is required" });
         }
 
-        // Validate request body
-        if (!name || name.trim().length < 3) {
-            return res.status(400).json({ error: "Name must be at least 3 characters" });
-        }
-
-        /**
-         * phone number regex validation
-         * Ensures 8 to 17 character length
-         *  No spaces, dashes, or special characters
-         * Valid international format
-         * must start with a '+' sign
-           */
-
-        const phoneRegex = /^\+[1-9]\d{1,3}\d{6,14}$/;
-        if (!phone_number || phone_number.length > 15 || !phoneRegex.test(phone_number)) {
-            return res.status(400).json({ error: "Invalid phone number. Must start with a '+' (optional) and contain 8 to 15 digits." });
-        }
-
         let connection;
         try {
 
-            // authorizing user
-            if (account_id) {
-                if (req.user.account_id !== Number(account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only view suppliers from your own account" });
-                }
-            } else {
-                if (req.user.sub_account_id !== Number(sub_account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only view suppliers from your own sub-account" });
-                }
-                else if (req.user.account_type !== "manager") {
+            // check if its sub account then it should be a manager
+            if (sub_account_id) {
+                if (req.user.account_type !== "manager") {
                     return res.status(403).json({ error: "Only owner and manager can add new suppliers" })
                 }
-                account_id = req.user.account_id; //assigning of in case it is null
             }
 
             connection = await db.getConnection();
 
+            // Validate request body
+            if (!name || name.trim().length < 3) {
+                return res.status(400).json({ error: "Name must be at least 3 characters" });
+            }
+
+            /**
+             * phone number regex validation
+             * Ensures 8 to 17 character length
+             *  No spaces, dashes, or special characters
+             * Valid international format
+             * must start with a '+' sign
+               */
+
+
+            const phoneRegex = /^\+[1-9]\d{1,3}\d{6,14}$/;
+            if (!phone_number || phone_number.length > 15 || !phoneRegex.test(phone_number)) {
+                return res.status(400).json({ error: "Invalid phone number. Must start with a '+' (optional) and contain 8 to 15 digits." });
+            }
+
+            if (!address) {
+                return res.status(400).json({ error: "Address is required" });
+            }
+
+            //Email: optional, must be in a valid email format
+            const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+            if (email && !emailRegex.test(email)) {
+                return res.status(400).json({ error: "Invalid Email format" });
+            }
+
             // Insert the supplier
             const [result] = await connection.execute(
-                "INSERT INTO Suppliers (name, phone_number, account_id) VALUES (?, ?, ?)",
-                [name.trim(), phone_number, account_id]
+                "INSERT INTO Suppliers (name, phone_number, email , address , account_id) VALUES (?, ?, ? ,? ,?)" ,
+                [name.trim(), phone_number, email, address, account_id]
             );
 
             return res.status(201).json({ message: "Supplier created successfully", supplier_id: result.insertId });
