@@ -45,7 +45,7 @@ const SideBar = () => {
                         </a>
                     </li>
                     <li className="menu-list">
-                        <a href="" className="menu-item">
+                        <a href="/products" className="menu-item">
                             <FontAwesomeIcon icon={faBoxOpen} className="font" /> Products
                         </a>
                     </li>
