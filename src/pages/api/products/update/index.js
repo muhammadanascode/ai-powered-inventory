@@ -2,20 +2,22 @@ import db from "@/lib/db";
 import authenticate from "@/middlewares/auth";
 
 /**
- * @description Handles updating a product in the database.
+ * @description Handles updating a product in the database using PUT (full update).
  * @param {import('next').NextApiRequest} req - The API request object.
  * @param {import('next').NextApiResponse} res - The API response object.
  * @returns {Promise<void>}
  */
 export default async function handler(req, res) {
-    if (req.method !== 'PATCH') {
+    // Only allow PUT method for full updates
+    if (req.method !== 'PUT') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
+    // Authenticate the user
     authenticate(req, res, async () => {
-        let { account_id, sub_account_id, product_id } = req.query;
+        let { account_id, sub_account_id } = req.user;
+        let { product_id } = req.query
         const { name, price, quantity, supplier_id } = req.body;
-
         /**
          * Validate query parameters
          */
@@ -28,29 +30,21 @@ export default async function handler(req, res) {
         }
 
         /**
-         * Validate request body - At least one field must be updated
+         * Validate request body - All fields must be provided for PUT
          */
-        if (!name && !supplier_id && !price && !quantity) {
-            return res.status(400).json({ error: "At least one of name, supplier_id, price, or quantity should be updated" });
+        if (!name || !price || !quantity) {
+            return res.status(400).json({ error: "All fields (name, price, quantity) are required" });
         }
 
         let connection;
         try {
             /**
-             * Authorization - Ensure user can only update their own products
+             * Authorization - Ensure only managers and owners can update the products
              */
-            if (account_id) {
-                if (req.user.account_id !== Number(account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only update products from your own account" });
+            if (sub_account_id) {
+                if (req.user.account_type !== "manager") {
+                    return res.status(403).json({ error: "Only managers of sub-accounts can update products" });
                 }
-            } else {
-                if (req.user.sub_account_id !== Number(sub_account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only update products from your own sub-account" });
-                }
-                else if (req.user.account_type !== "manager") {
-                    return res.status(403).json({ error: "Only owner and manager can update products" });
-                }
-                account_id = req.user.account_id; // Assign account_id for sub-accounts
             }
 
             /**
@@ -62,81 +56,50 @@ export default async function handler(req, res) {
              * Check if the product exists in the database
              */
             const [product] = await connection.execute(
-                "SELECT * FROM Products WHERE product_id = ? AND account_id = ?",
+                "SELECT * FROM products WHERE product_id = ? AND account_id = ?",
                 [product_id, account_id]
             );
 
             if (product.length === 0) {
-                return res.status(404).json({ error: "Product not found" });
+                return res.status(404).json({ error: "product not found" });
             }
 
             /**
-             * Validate product name length
+             * Ensure the product belongs to the authenticated user's account
              */
-            if (name && name.trim().length < 3) {
-                return res.status(400).json({ error: "Product name must be at least 3 characters long" });
-            }
-
-            //price validation
-            if (price && (isNaN(price) || price < 0)) {
-                return res.status(400).json({ error: "Price must be a valid number" });
-            }
-
-            //quantity validation
-            if (quantity && (isNaN(quantity) || quantity < 0)) {
-                return res.status(400).json({ error: "Quantity must be a valid number" });
-            }
-
-            //supplier_id validation
-            if (supplier_id) {
-                const [supplier] = await connection.execute("SELECT supplier_id FROM Suppliers WHERE supplier_id = ?", [supplier_id])
-                if (supplier.length === 0) {
-                    return res.status(404).json({ error: "Supplier not found" });
-                }
+            if (product[0].account_id !== account_id) {
+                return res.status(403).json({ error: "You are not authorized to update this product" });
             }
 
             /**
-             * Construct dynamic update query
+             * Validate individual fields
              */
-            const updates = [];
-            const params = [];
+            if (name.trim().length < 3) {
+                return res.status(400).json({ error: "product name must be at least 3 characters long" });
+            }
 
-            if (name) {
-                updates.push("name = ?");
-                params.push(name.trim());
+            // Validate price (must be greater than 0)
+            if (!price || price < 0) {
+                return res.status(400).json({ error: "Price must be greater than 0" });
             }
-            if (price) {
-                updates.push("price = ?");
-                params.push(price);
-            }
-            if (quantity) {
-                updates.push("quantity = ?");
-                params.push(quantity);
-            }
-            if (supplier_id) {
-                updates.push("supplier_id = ?");
-                params.push(supplier_id);
+
+            // Validate quantity (must be at least 0)
+            if (quantity === undefined || quantity < 0) {
+                return res.status(400).json({ error: "Quantity must be 0 or greater" });
             }
 
             /**
-             * Track last update time
+             * Perform the full update using PUT
              */
-            updates.push("updated_at = CURRENT_TIMESTAMP");
+            await connection.execute(
+                `UPDATE products 
+                 SET name = ?, price = ?, quantity = ?, supplier_id = ?, updated_at = CURRENT_TIMESTAMP 
+                 WHERE product_id = ? AND account_id = ?`,
+                [name.trim(), price, quantity, supplier_id ? supplier_id : null, product_id, account_id]
+            );
 
-            // Add product_id and account_id for WHERE clause
-            params.push(product_id, account_id);
-
-            /**
-             * Execute the update query
-             */
-            const query = `UPDATE Products SET ${updates.join(", ")} WHERE product_id = ? AND account_id = ?`;
-            const [result] = await connection.execute(query, params);
-
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ error: "Failed to made changes" });
-            }
-
-            return res.status(200).json({ message: "Product updated successfully" });
+            // Return success response
+            return res.status(200).json({ message: "product updated successfully" });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: "Internal Server Error" });
