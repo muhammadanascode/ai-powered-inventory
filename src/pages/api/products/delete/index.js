@@ -18,7 +18,8 @@ export default async function handler(req, res) {
     }
 
     authenticate(req, res, async () => {
-        let { account_id, sub_account_id, product_id } = req.query;
+        let { account_id, sub_account_id } = req.user;
+        const { product_id } = req.query;
 
         // Validate account_id
         if (!account_id && !sub_account_id) {
@@ -34,19 +35,10 @@ export default async function handler(req, res) {
         try {
 
             // authorizing user
-            if (account_id) {
-                if (req.user.account_id !== Number(account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only delete products from your own account" });
-                }
-            } else {
-                if (req.user.sub_account_id !== Number(sub_account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only delete products from your own sub-account" });
-                }
-                else if (req.user.account_type !== "manager") {
+            if (sub_account_id) {
+                if (req.user.account_type !== "manager") {
                     return res.status(403).json({ error: "Only owner and manager can delete products" })
                 }
-                //assigning of in case it is null
-                account_id = req.user.account_id;
             }
 
             connection = await db.getConnection();
