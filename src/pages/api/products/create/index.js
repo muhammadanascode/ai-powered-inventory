@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     authenticate(req, res, async () => { 
         // Extract data from request body and query parameters
         const { name, price, quantity, supplier_id } = req.body;
-        let { account_id, sub_account_id } = req.query;
+        let { account_id, sub_account_id } = req.user;
 
         // Ensure either account_id or sub_account_id is provided
         if (!account_id && !sub_account_id) {
@@ -51,24 +51,12 @@ export default async function handler(req, res) {
         let connection;
         try {
             // Authorization check: Ensure the user is allowed to add products
-            if (account_id) {
-                // If an account ID is provided, it must match the logged-in user's account
-                if (req.user.account_id !== Number(account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only add products to your own account" });
-                }
-            } else {
-                // If a sub-account ID is provided, it must match the logged-in user's sub-account
-                if (req.user.sub_account_id !== Number(sub_account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only add products to your own sub-account" });
-                }
-                // Only account owners and managers can add products
-                else if (req.user.account_type !== "manager") {
+            if (sub_account_id) {
+                 // Only account owners and managers can add products
+                 if (req.user.account_type !== "manager") {
                     return res.status(403).json({ error: "Only owner and manager can add new products" });
                 }
-                // Assign the account_id from the authenticated user
-                account_id = req.user.account_id;
-            }
-
+            } 
             // Get a database connection
             connection = await db.getConnection();
 
