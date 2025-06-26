@@ -40,7 +40,7 @@ const SideBar = () => {
                         </a>
                     </li>
                     <li className="menu-list">
-                        <a href="" className="menu-item">
+                        <a href="/orders" className="menu-item">
                             <FontAwesomeIcon icon={faCartShopping} className="font" /> Orders
                         </a>
                     </li>
