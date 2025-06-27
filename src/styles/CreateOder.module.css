@@ -1,0 +1,172 @@
+.container {
+    width: 100%;
+    min-height: 91vh;
+    padding: 20px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.heading {
+    color: black;
+}
+
+.select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 15px;
+    color: #333;
+    transition: border 0.3s ease;
+    margin-top: 40px;
+}
+
+.select:focus {
+    border-color: #0070f3;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
+}
+
+.selectCustomer {
+    width: 70%;
+}
+
+.productSelection {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.selectProduct {
+    width: 40%;
+}
+
+.inputQuantity {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    color: #333;
+    background-color: #fff;
+    width: 40%;
+    height: 40px;
+    margin-top: 40px;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.inputQuantity:focus {
+    border-color: #0070f3;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
+}
+
+.addItemBtn {
+    padding: 10px 20px;
+    margin-top: 40px;
+    height: 40px;
+    background-color: #0070f3;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.addItemBtn:hover {
+    background-color: #0059c1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    justify-content: space-evenly;
+    padding: 10px;
+    background-color: #2d93ff;
+    border-radius: 5px;
+    margin-top: 30px;
+}
+
+.orderItemheadDiv {
+    width: 60%;
+}
+
+.quantityheadDiv {
+    width: 20%;
+}
+
+.priceheadDiv {
+    width: 20%;
+}
+
+.orderItems {
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 20px;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: white;
+    color: rgb(104, 104, 104);
+}
+
+.productNameDiv {
+    width: 60%;
+}
+
+.productQuantityDiv {
+    width: 20%;
+}
+
+.productPriceDiv {
+    width: 20%;
+}
+
+.deleteIcon:hover{
+    cursor: pointer;
+    color: red;
+}
+
+.totalPriceDiv {
+    width: 80%;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 20px;
+    border-radius: 5px;
+    padding: 5px;
+    gap:50px ;
+}
+
+.totalPrice{
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    font-style: italic;
+}
+
+.placeOrderBtn {
+    padding: 10px 20px;
+    height: 40px;
+    background-color: #0070f3;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.placeOrderBtn:hover {
+    background-color: #0059c1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
