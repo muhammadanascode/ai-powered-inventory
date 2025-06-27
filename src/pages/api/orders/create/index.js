@@ -18,8 +18,8 @@ export default async function handler(req, res) {
 
     // Authenticate the user
     authenticate(req, res, async () => {
-        const { products } = req.body;  // Extract products from request body
-        let { account_id, sub_account_id, customer_id } = req.query;  // Extract query params
+        const { products , customer_id } = req.body;  // Extract products from request body
+        let { account_id, sub_account_id } = req.user;  // Extract query params
 
         // Validate that either account_id or sub_account_id is provided
         if (!account_id && !sub_account_id) {
