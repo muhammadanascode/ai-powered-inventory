@@ -19,8 +19,8 @@ export default async function handler(req, res) {
     }
 
     authenticate(req, res, async () => {
-        let { order_id, account_id, sub_account_id } = req.query;
-        const { order_status } = req.body;
+        let { account_id, sub_account_id } = req.user;
+        const { order_id, order_status } = req.body;
 
         // Validate input
         if (!order_id) {
@@ -96,7 +96,7 @@ export default async function handler(req, res) {
                     `SELECT product_id, quantity FROM order_items WHERE order_id = ?`,
                     [order_id]
                 );
-            
+
                 // Loop through each item and update its product quantity
                 for (const item of items) {
                     await connection.execute(
