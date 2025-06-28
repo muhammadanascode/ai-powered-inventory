@@ -18,7 +18,9 @@ export default async function handler(req, res) {
 
     // Ensure authentication middleware runs before executing main logic
     authenticate(req, res, async () => {
-        let { account_id, sub_account_id, order_status, price, created_at } = req.query;
+        let { account_id, sub_account_id } = req.user;
+        const { order_status, price, created_at } = req.body;
+
 
         // Validate that at least one ID is provided
         if (!account_id && !sub_account_id) {
@@ -42,18 +44,6 @@ export default async function handler(req, res) {
 
         let connection;
         try {
-            // Authorization check: Ensure the user is allowed to view orders
-            if (account_id) {
-                if (req.user.account_id !== Number(account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only view orders from your own account" });
-                }
-            } else {
-                if (req.user.sub_account_id !== Number(sub_account_id)) {
-                    return res.status(403).json({ error: "Forbidden: You can only view orders from your own sub-account" });
-                }
-                // Assign the account_id from the authenticated user
-                account_id = req.user.account_id;
-            }
 
             // Get a database connection
             connection = await db.getConnection();
