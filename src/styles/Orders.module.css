@@ -9,6 +9,34 @@
     align-items: center;
 }
 
+
+.filterBar {
+    display: flex;
+    width: 80%;
+    justify-content: space-evenly;
+    margin-top: 20px;
+}
+
+.filterBtn {
+    padding: 8px 16px;
+    background-color: #f2f2f2;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #333;
+    transition: background-color 0.2s ease;
+}
+
+.filterBtn:hover {
+    background-color: #e0e0e0;
+}
+
+.activeFilter {
+    background-color: #4a90e2;
+    color: white;
+}
+
 .header {
     display: flex;
     flex-direction: row;
@@ -20,20 +48,25 @@
     margin-top: 30px;
 }
 
-.customerHead{
+
+.customerHead {
     width: 30%;
 }
 
-.totalPriceHead{
-    width: 20%;
+.totalPriceHead {
+    width: 15%;
 }
 
-.dateHead{
+.dateHead {
     width: 25%;
 }
 
-.statusHead{
+.statusHead {
     width: 20%;
+}
+
+.viewDetailsHead {
+    width: 10%;
 }
 
 .orders {
@@ -55,7 +88,7 @@
 }
 
 .priceDiv {
-    width: 20%;
+    width: 15%;
     display: flex;
     justify-content: flex-start;
 }
@@ -71,6 +104,35 @@
     display: flex;
     justify-content: flex-start;
 }
+
+.viewDetails {
+    width: 10%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.viewDetailsBtn {
+  background-color: #2563eb; /* Tailwind's blue-600 */
+  color: white;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.viewDetailsBtn:hover {
+  background-color: #1e40af; /* Tailwind's blue-800 */
+  transform: translateY(-1px);
+}
+
+.viewDetailsBtn:active {
+  transform: scale(0.98);
+}
+
 
 .btnDiv {
     width: 100%;
@@ -94,19 +156,79 @@
 }
 
 .orderStatusSelect {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: white;
-  font-size: 14px;
-  color: #333;
-  cursor: pointer;
-  transition: border 0.2s ease, box-shadow 0.2s ease;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: white;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
 .orderStatusSelect:focus {
-  outline: none;
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
 }
 
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalBox {
+    background: #fff;
+    padding: 24px 32px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    max-width: 320px;
+    width: 90%;
+    color: black;
+}
+
+.modalButtons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.updateBtn {
+    padding: 8px 16px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.updateBtn:hover {
+    background-color: #0056b3;
+}
+
+.cancelBtn {
+    padding: 8px 16px;
+    background-color: #d9d9d9;
+    border: none;
+    border-radius: 6px;
+    color: rgb(90, 90, 90);
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-left: 10px;
+}
+
+.cancelBtn:hover {
+    background-color: #c0c0c0;
+}
