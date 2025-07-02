@@ -60,6 +60,7 @@ const OrderDetails = () => {
 
     return (
         <div className={styles.container}>
+            {/* Displayiing Order id , status , price and date */}
             <div className={styles.orderHeader}>
                 <div className={styles.orderIdDiv}><h2>Order #{order.order_id}</h2></div>
                 <div className={styles.orderStatusDiv}><p>Status: <strong>{order.order_status}</strong></p></div>
@@ -67,14 +68,17 @@ const OrderDetails = () => {
                 <div className={styles.dateDiv}><p>Placed on: <strong>{new Date(order.created_at).toLocaleString()}</strong></p></div>
             </div>
 
+            {/* Order Items heading */}
             <div className={styles.ordersheading}><h2>Order Items</h2></div>
 
+            {/* Heading for displaying products */}
             <div className={styles.orderItemHeader}>
                 <div className={styles.productNameHead}><h4>Product Name</h4></div>
                 <div className={styles.productQuantityHead}><h4>Quantity</h4></div>
                 <div className={styles.productPriceHead}><h4>Price</h4></div>
             </div>
 
+            {/* Displaying order items */}
             {order.products.map((product) => (
                 <div className={styles.product}>
                     <div className={styles.productNameDiv}><p>{product.product_name}</p></div>
@@ -82,6 +86,7 @@ const OrderDetails = () => {
                     <div className={styles.productPriceDiv}><p>{product.price}&times;{product.quantity} = {product.price * product.quantity}</p></div>
                 </div>
             ))}
+            {/* Customer Details */}
             <div className={styles.customerDetailsDiv}>
                 <h2 className={styles.customerDetailsHead}>Customer Details</h2>
                 <p><strong>Name:</strong> {order.customer_name}</p>
