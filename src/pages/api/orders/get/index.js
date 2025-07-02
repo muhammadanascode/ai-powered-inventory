@@ -35,7 +35,7 @@ export default async function handler(req, res) {
             // Fetch order + customer
             const [orderRows] = await connection.execute(
                 `SELECT o.order_id, o.total_price, o.order_status, o.created_at,
-                c.customer_id, c.name AS customer_name, c.phone_number , c.address
+                c.customer_id,c.email,c.name AS customer_name, c.phone_number , c.address
          FROM Orders o
          JOIN Customers c ON o.customer_id = c.customer_id
          WHERE o.order_id = ? AND o.account_id = ?`,
