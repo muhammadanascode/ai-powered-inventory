@@ -23,9 +23,16 @@ const salesData = [
     { name: "May", sales: 6000 },
 ];
 
-const percentage = 75;
+const AdminPanel = ({ dates, data }) => {
 
-const AdminPanel = () => {
+    // Function to get the change arrow based on direction
+    const getChangeArrow = (direction) => {
+        if (direction == 'up') return '▲';
+        if (direction == 'down') return '▼';
+        return '';
+    };
+
+
     return (
         <div className="admin-container">
             <div className="admin-header">
@@ -35,24 +42,21 @@ const AdminPanel = () => {
                 </div>
 
                 {/* Date selection dropdowns */}
-                {/* TODO: Replace with account registration month/year if needed */}
                 <div className="admin-select">
-                    <label htmlFor="month-select">Month: </label>
-                    <select id="month-select" className="admin-select">
-                        <option value="Jan">January</option>
-                        <option value="Feb">February</option>
-                        <option value="Mar">March</option>
-                        <option value="Apr">April</option>
-                        <option value="May">May</option>
-                        {/* Add more months as needed */}
-                    </select>
-                    <label htmlFor="year-select">Year: </label>
-                    <select id="year-select" className="admin-select">
-                        <option value="2023">2023</option>
-                        <option value="2022">2022</option>
-                        <option value="2021">2021</option>
-                        {/* Add more years as needed */}
-                    </select>
+                    <div className="admin-select">
+                        <label htmlFor="month-select">Date: </label>
+                        <select id="month-select" className="admin-select">
+                            {/* dynamically generated */}
+                            {dates.map((d, index) => (
+                                <option key={index} value={`${d.month}-${d.year}`}>
+                                    {new Date(d.year, d.month - 1).toLocaleString("default", {
+                                        month: "long",
+                                    })}{" "}
+                                    {d.year}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -66,8 +70,8 @@ const AdminPanel = () => {
 
                         <div style={{ width: 40, height: 40, margin: '0 auto' }}>
                             <CircularProgressbar
-                                value={percentage}
-                                text={`${percentage}%`}
+                                value={`${data?.change_percent_sales || 0}%`}
+                                text={`${data?.change_percent_sales || 0}%`}
                                 styles={buildStyles({
                                     textColor: "#000",
                                     pathColor: "#007bff",
@@ -75,8 +79,8 @@ const AdminPanel = () => {
                                 })}
                             />
                         </div>
-                        <h4>Rs. 1,00,000</h4>
-                        <p className="comparison positive">▲ Up 15% from last month</p>
+                        <h4>{data?.total_sales || "-"}</h4>
+                        <p className="comparison positive">{getChangeArrow(data?.change_direction_sales)} {data?.change_direction_sales} {data?.change_percent_sales}% from last month</p>
                     </div>
 
                     {/* Card showing total number of orders */}
@@ -86,8 +90,8 @@ const AdminPanel = () => {
 
                         <div style={{ width: 40, height: 40, margin: '0 auto' }}>
                             <CircularProgressbar
-                                value={percentage}
-                                text={`${percentage}%`}
+                                value={`${data?.change_percent_orders || 0}%`}
+                                text={`${data?.change_percent_orders || 0}%`}
                                 styles={buildStyles({
                                     textColor: "#000",
                                     pathColor: "#007bff",
@@ -95,8 +99,8 @@ const AdminPanel = () => {
                                 })}
                             />
                         </div>
-                        <h4>54678</h4>
-                        <p className="comparison positive">▲ Up 15% from last month</p>
+                        <h4>{data?.total_orders || "-"}</h4>
+                        <p className="comparison positive"> {getChangeArrow(data?.change_direction_orders)} {data?.change_direction_orders} {data?.change_percent_orders}% from last month</p>
                     </div>
 
                     {/* Bar chart showing monthly sales */}
