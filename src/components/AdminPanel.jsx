@@ -62,7 +62,6 @@ const AdminPanel = ({ dates, data, salesData }) => {
             <div className="admin-cards">
 
                 {/* Card showing total sales */}
-                {/* TODO: Replace with actual sales data */}
                 <div className="admin-card-block">
                     <div className="admin-card admin-card-1">
                         <h2>Total Sales</h2>
@@ -83,7 +82,6 @@ const AdminPanel = ({ dates, data, salesData }) => {
                     </div>
 
                     {/* Card showing total number of orders */}
-                    {/* TODO: Replace with actual order data */}
                     <div className="admin-card admin-card-2">
                         <h2>Total Orders</h2>
 
@@ -103,7 +101,6 @@ const AdminPanel = ({ dates, data, salesData }) => {
                     </div>
 
                     {/* Bar chart showing monthly sales */}
-                    {/* TODO: Replace with actual sales data */}
                     <div className="admin-card admin-sales-bar-chart">
                         <h2>Monthly Sales (Bar Chart)</h2>
                         <ResponsiveContainer width="100%" height={150}>
@@ -119,7 +116,6 @@ const AdminPanel = ({ dates, data, salesData }) => {
                 </div>
 
                 {/* Line chart showing sales trend over months */}
-                {/* TODO: Replace with actual trend data */}
                 <div className="admin-card admin-sales-chart">
                     <h2>Sales Overview</h2>
                     <ResponsiveContainer width="100%" height={250}>
