@@ -8,6 +8,9 @@ export default function Home() {
 
   const [dates, setDates] = useState([]);
   const [data, setData] = useState(null);
+  const [briefSalesData, setBriefSalesData] = useState(null);
+
+  const monthsNames = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 
   const getDate = async () => {
     // Fetch date data from the API
@@ -32,7 +35,7 @@ export default function Home() {
 
       // Fetch sales data for the last date in the list
       if (data.length > 0) {
-        const lastDate = data[1];
+        const lastDate = data[data.length - 1];
         console.log(lastDate);
 
         // Calling function to get the sales
@@ -72,13 +75,55 @@ export default function Home() {
     }
   };
 
+  const getBriefSalesData = async () => {
+    try {
+      const token = getToken();
+      if (!token) {
+        return
+      }
+      // Fetch sales data for the last date in the list
+      const res = await fetch('/api/adminPage/brief_sales', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${token}`
+        }
+      })
+
+      const data = await res.json();
+      if (res.status !== 200) {
+        console.log(data.error);
+
+      }
+      console.log(data);
+
+      //Reformat the data to include month names
+      const formattedData = data.map((sale) => {
+        return {
+          month: monthsNames[sale.month - 1],
+          year: sale.year,
+          total_sales: sale.total_sales,
+          total_orders: sale.total_orders
+        }
+      })
+      // Set the brief sales data state
+      setBriefSalesData(formattedData);
+
+    } catch (error) {
+      console.error("Error fetching sales data:", error);
+    }
+  }
+
   useEffect(() => {
+    // Fetch initial data when the component mounts
     getDate();
+    // Fetch brief sales data
+    getBriefSalesData();
   }, [])
 
   return (
     <>
-      <AdminPanel dates={dates} data={data} />
+      <AdminPanel dates={dates} data={data} salesData={briefSalesData} />
     </>
   );
 }
