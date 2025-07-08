@@ -14,16 +14,8 @@ import {
     ResponsiveContainer
 } from "recharts";
 
-// Sample data for sales and orders
-const salesData = [
-    { name: "Jan", sales: 4000 },
-    { name: "Feb", sales: 3000 },
-    { name: "Mar", sales: 5000 },
-    { name: "Apr", sales: 7000 },
-    { name: "May", sales: 6000 },
-];
 
-const AdminPanel = ({ dates, data }) => {
+const AdminPanel = ({ dates, data, salesData }) => {
 
     // Function to get the change arrow based on direction
     const getChangeArrow = (direction) => {
@@ -31,6 +23,13 @@ const AdminPanel = ({ dates, data }) => {
         if (direction == 'down') return '▼';
         return '';
     };
+
+    // Calculate dynamic max for Y-axis
+    const getYAxis = () => {
+        if (!salesData || salesData.length === 0) return 1000; // Default max value if no data
+        const maxSales = Math.max(...salesData.map(sale => sale.total_sales));
+        return Math.ceil(maxSales / 1000) * 1000; // Round up to nearest 1000
+    }
 
 
     return (
@@ -110,10 +109,10 @@ const AdminPanel = ({ dates, data }) => {
                         <ResponsiveContainer width="100%" height={150}>
                             <BarChart data={salesData}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
+                                <XAxis dataKey="month" />
+                                <YAxis domain={[0, getYAxis()]} />
                                 <Tooltip />
-                                <Bar dataKey="sales" fill="#2d93ff" />
+                                <Bar dataKey="total_sales" fill="#2d93ff" />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -126,10 +125,10 @@ const AdminPanel = ({ dates, data }) => {
                     <ResponsiveContainer width="100%" height={250}>
                         <LineChart data={salesData}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
+                            <XAxis dataKey="month" />
+                            <YAxis domain={[0, getYAxis()]} />
                             <Tooltip />
-                            <Line type="monotone" dataKey="sales" stroke="#2d93ff" strokeWidth={2} />
+                            <Line type="monotone" dataKey="total_sales" stroke="#2d93ff" strokeWidth={2} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
