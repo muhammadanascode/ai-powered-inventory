@@ -45,8 +45,6 @@ export default async function handler(req, res) {
                 [account_id, prevMonth, prevYear]
             );
 
-            console.log("Previous Sales Data", prevSalesData);
-
 
             const prev = prevSalesData[0][0] || { total_sales: 0 };
 
