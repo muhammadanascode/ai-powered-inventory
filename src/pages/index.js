@@ -121,9 +121,14 @@ export default function Home() {
     getBriefSalesData();
   }, [])
 
+  const handleUpdate = (month, year) => {
+    // Update the sales data when a new date is selected
+    getSales(month, year);
+  }
+
   return (
     <>
-      <AdminPanel dates={dates} data={data} salesData={briefSalesData} />
+      <AdminPanel dates={dates} data={data} salesData={briefSalesData} updateDate={handleUpdate} />
     </>
   );
 }

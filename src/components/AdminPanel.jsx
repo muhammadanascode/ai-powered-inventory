@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/AdminPanel.css";
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -15,7 +15,18 @@ import {
 } from "recharts";
 
 
-const AdminPanel = ({ dates, data, salesData }) => {
+const AdminPanel = ({ dates, data, salesData, updateDate }) => {
+
+    const [selectedValue, setSelectedValue] = useState('');
+
+    useEffect(() => {
+        // If dates are provided, set the last month as defaults selected value
+        if (dates && dates.length > 0) {
+            // Set the initial selected value to the last date in the list
+            const lastDate = dates[dates.length - 1];
+            setSelectedValue(`${lastDate.month}-${lastDate.year}`);
+        }
+    }, [dates])
 
     // Function to get the change arrow based on direction
     const getChangeArrow = (direction) => {
@@ -31,6 +42,12 @@ const AdminPanel = ({ dates, data, salesData }) => {
         return Math.ceil(maxSales / 1000) * 1000; // Round up to nearest 1000
     }
 
+    // Handle change in date selection
+    const handleChange = (value) => {
+        const [month, year] = value.split('-').map(Number);
+        updateDate(month, year);
+    }
+
 
     return (
         <div className="admin-container">
@@ -44,7 +61,15 @@ const AdminPanel = ({ dates, data, salesData }) => {
                 <div className="admin-select">
                     <div className="admin-select">
                         <label htmlFor="month-select">Date: </label>
-                        <select id="month-select" className="admin-select">
+                        <select id="month-select"
+                            className="admin-select"
+                            value={selectedValue}
+                            onChange={(e) => {
+                                setSelectedValue(e.target.value);
+                                handleChange(e.target.value)
+                            }
+                            }>
+
                             {/* dynamically generated */}
                             {dates.map((d, index) => (
                                 <option key={index} value={`${d.month}-${d.year}`}>
