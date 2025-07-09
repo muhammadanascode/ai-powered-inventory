@@ -58,7 +58,6 @@ const AdminPanel = ({ dates, data, salesData, updateDate }) => {
                 </div>
 
                 {/* Date selection dropdowns */}
-                <div className="admin-select">
                     <div className="admin-select">
                         <label htmlFor="month-select">Date: </label>
                         <select id="month-select"
@@ -81,7 +80,6 @@ const AdminPanel = ({ dates, data, salesData, updateDate }) => {
                             ))}
                         </select>
                     </div>
-                </div>
             </div>
 
             <div className="admin-cards">
