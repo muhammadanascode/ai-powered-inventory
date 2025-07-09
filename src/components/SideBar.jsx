@@ -7,7 +7,8 @@ import {
     faTruck,
     faCartShopping,
     faBoxOpen,
-    faRightFromBracket
+    faRightFromBracket,
+    faTachometerAlt 
 } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 
@@ -29,6 +30,11 @@ const SideBar = () => {
                     <Image src="/head-img.png" alt="head-img" height={50} width={50} />
                 </div>
                 <ul className="menu">
+                    <li className="menu-list">
+                        <a href="/" className="menu-item">
+                            <FontAwesomeIcon icon={faTachometerAlt } className="font" /> Dashboard
+                        </a>
+                    </li>
                     <li className="menu-list">
                         <a href="/customers" className="menu-item">
                             <FontAwesomeIcon icon={faUser} className="font" /> Customers
