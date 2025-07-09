@@ -30,7 +30,7 @@
 .menu{
     display: flex;
     flex-direction: column;
-    gap: 50px;
+    gap: 40px;
     margin-top: 40px;
 }
 
@@ -55,7 +55,7 @@
 }
 
 .logoutDiv{
-    margin-top: 100px;
+    margin-top: 80px;
     width: 100%;
     text-align: center;
 }

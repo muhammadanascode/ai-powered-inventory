@@ -8,7 +8,8 @@ import {
     faCartShopping,
     faBoxOpen,
     faRightFromBracket,
-    faTachometerAlt 
+    faTachometerAlt,
+    faChartLine
 } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 
@@ -53,6 +54,11 @@ const SideBar = () => {
                     <li className="menu-list">
                         <a href="/products" className="menu-item">
                             <FontAwesomeIcon icon={faBoxOpen} className="font" /> Products
+                        </a>
+                    </li>
+                    <li className="menu-list">
+                        <a href="/predictions" className="menu-item">
+                            <FontAwesomeIcon icon={faChartLine} className="font" /> Predictions
                         </a>
                     </li>
                 </ul>
