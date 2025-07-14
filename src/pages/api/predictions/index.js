@@ -17,12 +17,24 @@ export default async function handler(req, res) {
 
         try {
             const connection = await db.getConnection();
-            const query = `SELECT product_id, name, quantity FROM products WHERE account_id=?`;
-            const [products] = await connection.execute(query, [account_id]);
+            const query1 = `SELECT product_id, name, quantity FROM products WHERE account_id=?`;
+            const [products] = await connection.execute(query1, [account_id]);
 
             if (products.length === 0) {
                 return res.status(200).json({ error: "No predictions available" });
             }
+
+            const query2 = `
+                    SELECT oi.product_id, SUM(oi.quantity) AS total_sold 
+                    FROM order_items oi
+                    JOIN Orders o ON oi.order_id = o.order_id
+                    WHERE o.account_id = ? 
+                    AND MONTH(o.created_at) = MONTH(CURDATE())
+                    AND YEAR(o.created_at) = YEAR(CURDATE())
+                    GROUP BY oi.product_id
+                    ORDER BY oi.product_id ASC`;
+
+            const [currentMonthSales] = await connection.execute(query2,[account_id])
 
             const forecastScriptPath = path.resolve(process.cwd(), "src/utils/forecast.py");
 
@@ -39,6 +51,7 @@ export default async function handler(req, res) {
                     //preparing data for frontend
                     const predictedData = products.map((product) => {
                         const prediction = predictions[product.product_id]?.[0]; // safely get first prediction
+                        const saleRecord = currentMonthSales.find((item)=>item.product_id == product.product_id);
 
                         return {
                             product_id: product.product_id,
@@ -46,6 +59,7 @@ export default async function handler(req, res) {
                             quantity: product.quantity,
                             forecastedDate: prediction?.ds || null,
                             forecastedQuantity: Math.round(prediction?.yhat) || null,
+                            total_sold : saleRecord.total_sold || 0 
                         };
                     });
 
