@@ -31,6 +31,7 @@ export default async function handler(req, res) {
                     WHERE o.account_id = ? 
                     AND MONTH(o.created_at) = MONTH(CURDATE())
                     AND YEAR(o.created_at) = YEAR(CURDATE())
+                    AND o.ORDER_STATUS != "CANCELLED"
                     GROUP BY oi.product_id
                     ORDER BY oi.product_id ASC`;
 
